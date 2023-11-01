@@ -31,23 +31,24 @@ COMMA_PRIORITY: Final = 18
 TERNARY_PRIORITY: Final = 16
 LOGIC_PRIORITY: Final = 14
 STRING_PRIORITY: Final = 12
-COMPARATOR_PRIORITY: Final = 10
+COMPARATOR_PRIORITY: Final = 11
 MATH_PRIORITIES: Final = {
-    token.VBAR: 9,
-    token.CIRCUMFLEX: 8,
-    token.AMPER: 7,
-    token.LEFTSHIFT: 6,
-    token.RIGHTSHIFT: 6,
-    token.PLUS: 5,
-    token.MINUS: 5,
-    token.STAR: 4,
-    token.SLASH: 4,
-    token.DOUBLESLASH: 4,
-    token.PERCENT: 4,
-    token.AT: 4,
-    token.TILDE: 3,
-    token.DOUBLESTAR: 2,
+    token.VBAR: 10,
+    token.CIRCUMFLEX: 9,
+    token.AMPER: 8,
+    token.LEFTSHIFT: 7,
+    token.RIGHTSHIFT: 7,
+    token.PLUS: 6,
+    token.MINUS: 6,
+    token.STAR: 5,
+    token.SLASH: 5,
+    token.DOUBLESLASH: 5,
+    token.PERCENT: 5,
+    token.AT: 5,
+    token.TILDE: 4,
+    token.DOUBLESTAR: 3,
 }
+DOT_AFTER_BRACKET_PRIORITY: Final = 2
 DOT_PRIORITY: Final = 1
 
 
@@ -239,9 +240,11 @@ def is_split_before_delimiter(leaf: Leaf, previous: Optional[Leaf] = None) -> Pr
         leaf.type == token.DOT
         and leaf.parent
         and leaf.parent.type not in {syms.import_from, syms.dotted_name}
-        and (previous is None or previous.type in CLOSING_BRACKETS)
     ):
-        return DOT_PRIORITY
+        if previous is None or previous.type in CLOSING_BRACKETS:
+            return DOT_AFTER_BRACKET_PRIORITY
+        else:
+            return DOT_PRIORITY
 
     if (
         leaf.type in MATH_OPERATORS
